@@ -1,0 +1,52 @@
+{
+  "project_id": "my-gcp-project",
+  "query_window_hours": 48,
+  "extracted_at": "2026-08-10T21:19:24.850881Z",
+  "total_entries": 3,
+  "log_entries": [
+    {
+      "timestamp": "2026-08-10T19:19:24.850823Z",
+      "insert_id": "ins-92849184",
+      "severity": "ERROR",
+      "log_name": "projects/my-gcp-project/logs/backupdr.googleapis.com%2Foperational_logs",
+      "resource_type": "backupdr.googleapis.com/BackupPlanAssociation",
+      "payload": {
+        "message": "Backup job failed for target VM: prod-sql-replica. Execution timed out after 120 minutes during snapshot transfer.",
+        "job_id": "job-88392-18",
+        "error_details": {
+          "code": "DEADLINE_EXCEEDED",
+          "source": "GCS_UPLOADER"
+        }
+      },
+      "principal_email": "bdr-agent-sa@my-gcp-project.iam.gserviceaccount.com"
+    },
+    {
+      "timestamp": "2026-08-10T16:19:24.850823Z",
+      "insert_id": "ins-91028394",
+      "severity": "WARNING",
+      "log_name": "projects/my-gcp-project/logs/cloudaudit.googleapis.com%2Factivity",
+      "resource_type": "backupdr.googleapis.com/BackupVault",
+      "payload": {
+        "methodName": "google.cloud.backupdr.v1.BackupDR.DeleteBackupVault",
+        "status": {
+          "code": 9,
+          "message": "FAILED_PRECONDITION: Cannot delete backup vault with active immutable locks."
+        },
+        "resourceName": "projects/my-gcp-project/locations/us-central1/backupVaults/immutable-vault-prod"
+      },
+      "principal_email": "admin-auditor@my-company.com"
+    },
+    {
+      "timestamp": "2026-08-10T09:19:24.850823Z",
+      "insert_id": "ins-83749102",
+      "severity": "WARNING",
+      "log_name": "projects/my-gcp-project/logs/backupdr.googleapis.com%2Foperational_logs",
+      "resource_type": "backupdr.googleapis.com/BackupPlanAssociation",
+      "payload": {
+        "message": "Backup plan association bpa-dev-app-worker modified. Protection policy retention was decreased from 14 days to 7 days.",
+        "bpa_id": "bpa-dev-app-worker"
+      },
+      "principal_email": "dev-ops-engineer@my-company.com"
+    }
+  ]
+}
