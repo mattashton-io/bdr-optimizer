@@ -1,0 +1,70 @@
+{
+  "mcpServers": {
+    "compute_engine": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google/mcp-gcp-compute"
+      ],
+      "env": {
+        "GCP_PROJECT_ID": "${GCP_PROJECT_ID}",
+        "GCP_REGION": "${GCP_REGION}"
+      },
+      "description": "GCP-Managed MCP server providing tools to list, describe, inspect, and audit Compute Engine VMs and attached disks."
+    },
+    "cloud_storage": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google/mcp-gcp-storage"
+      ],
+      "env": {
+        "GCP_PROJECT_ID": "${GCP_PROJECT_ID}"
+      },
+      "description": "GCP-Managed MCP server providing tools to manage and configure Cloud Storage buckets, lifecycles, and lock policies."
+    },
+    "bigquery_billing": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google/mcp-gcp-bigquery"
+      ],
+      "env": {
+        "GCP_PROJECT_ID": "${GCP_PROJECT_ID}"
+      },
+      "description": "GCP-Managed MCP server providing tools to query Cloud Billing export datasets and run SQL data queries."
+    },
+    "backupdr_mcp": {
+      "command": "python",
+      "args": [
+        "mcp_servers/backupdr_mcp.py"
+      ],
+      "env": {
+        "GCP_PROJECT_ID": "${GCP_PROJECT_ID}",
+        "GCP_REGION": "${GCP_REGION}"
+      },
+      "description": "Custom Local MCP server providing tools for managing Backup Vaults, executing Backup Plan Associations, and validating compliance."
+    },
+    "pricing_mcp": {
+      "command": "python",
+      "args": [
+        "mcp_servers/pricing_mcp.py"
+      ],
+      "env": {
+        "GCP_PROJECT_ID": "${GCP_PROJECT_ID}",
+        "GCP_REGION": "${GCP_REGION}"
+      },
+      "description": "Custom Local MCP server providing tools to compute sizing recommendations and estimate Backup & DR licensing and storage costs."
+    },
+    "chat_mcp": {
+      "command": "python",
+      "args": [
+        "mcp_servers/chat_mcp.py"
+      ],
+      "env": {
+        "WEBHOOK_URL": "${WEBHOOK_URL}"
+      },
+      "description": "Custom Local MCP server providing tools to format and deliver success notifications and critical failure alerts to team chat channels."
+    }
+  }
+}
