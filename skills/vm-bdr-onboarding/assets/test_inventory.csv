@@ -1,0 +1,4 @@
+vm_name,zone,machine_type,labels,disk_size_gb,disk_type
+prod-db-master,us-east1-b,n2-standard-16,env=prod;role=db,1024,pd-ssd
+web-app-01,us-east1-c,n1-standard-4,env=prod;role=app,100,pd-standard
+dev-sandbox,us-central1-f,f1-micro,env=dev,20,pd-standard

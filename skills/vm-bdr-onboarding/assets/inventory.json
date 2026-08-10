@@ -1,0 +1,59 @@
+{
+  "project_id": "my-gcp-project",
+  "scanned_at": "2026-08-10T20:25:24.209553Z",
+  "instances": [
+    {
+      "name": "prod-db-master",
+      "zone": "us-east1-b",
+      "machine_type": "n2-standard-16",
+      "disks": [
+        {
+          "name": "data-disk",
+          "type": "pd-ssd",
+          "size_gb": 1024
+        }
+      ],
+      "labels": {
+        "env": "prod",
+        "role": "db"
+      },
+      "classification": "Tier 1",
+      "bdr_profile_recommendation": "Gold"
+    },
+    {
+      "name": "web-app-01",
+      "zone": "us-east1-c",
+      "machine_type": "n1-standard-4",
+      "disks": [
+        {
+          "name": "data-disk",
+          "type": "pd-standard",
+          "size_gb": 100
+        }
+      ],
+      "labels": {
+        "env": "prod",
+        "role": "app"
+      },
+      "classification": "Tier 2",
+      "bdr_profile_recommendation": "Silver"
+    },
+    {
+      "name": "dev-sandbox",
+      "zone": "us-central1-f",
+      "machine_type": "f1-micro",
+      "disks": [
+        {
+          "name": "data-disk",
+          "type": "pd-standard",
+          "size_gb": 20
+        }
+      ],
+      "labels": {
+        "env": "dev"
+      },
+      "classification": "Tier 3",
+      "bdr_profile_recommendation": "Bronze"
+    }
+  ]
+}

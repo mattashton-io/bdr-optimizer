@@ -1,0 +1,22 @@
+[agent]
+name = "gcp-bdr-optimizer"
+description = "GCP Backup and Disaster Recovery (BDR) Optimization Agent. Helps optimize workload scoping, sizing, costs, and policy enforcement."
+version = "0.1.0"
+
+[[subagents]]
+name = "bdr-planner"
+description = "Specialized sub-agent for scoping, sizing, and estimating costs of workloads for GCP Backup and Disaster Recovery."
+tasks = [
+  "workload-sizing",
+  "cost-estimation",
+  "storage-tiering-recommendations"
+]
+
+[[subagents]]
+name = "bdr-orchestrator"
+description = "Specialized sub-agent for enforcing backup policies, checking compliance, and managing scheduling."
+tasks = [
+  "policy-enforcement",
+  "compliance-auditing",
+  "schedule-optimization"
+]
