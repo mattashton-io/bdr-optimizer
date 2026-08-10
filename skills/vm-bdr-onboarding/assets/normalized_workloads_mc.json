@@ -1,0 +1,13 @@
+{
+  "workloads": [
+    {
+      "source_id": "mc-vm-99",
+      "name": "hyperv-sql-db",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1000.0,
+      "os_name": "RHEL 8.5",
+      "hypervisor": "Hyper-V"
+    }
+  ]
+}

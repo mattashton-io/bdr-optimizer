@@ -1,0 +1,2 @@
+MachineId,MachineName,PrimaryIPAddress(optional),PrimaryMACAddress(optional),PublicIPAddress(optional),IpAddressListSemiColonDelimited(optional),TotalDiskAllocatedGiB,TotalDiskUsedGiB,MachineTypeLabel(optional),AllocatedProcessorCoreCount,MemoryGiB,HostingLocation(optional),OsType(optional),OsPublisher(optional),OsName,OsVersion(optional),MachineStatus(optional),ProvisioningState(optional),CreateDate(optional),IsPhysical
+mc-vm-99,hyperv-sql-db,192.168.10.50,00:15:5D:01:02:03,,,1000,600,Standard,16,64.0,OnPremises,Linux,RedHat,RHEL 8.5,8.5,Running,Provisioned,2026-01-01,False

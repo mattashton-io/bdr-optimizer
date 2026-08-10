@@ -1,0 +1,3 @@
+MachineId,DiskLabel,SizeInGib,UsedInGib,StorageTypeLabel
+mc-vm-99,Data_C,100,50,SSD
+mc-vm-99,Data_D,900,550,HDD

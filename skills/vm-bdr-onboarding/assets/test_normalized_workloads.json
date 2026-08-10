@@ -1,0 +1,40 @@
+{
+  "workloads": [
+    {
+      "source_id": "uuid-1",
+      "name": "prod-vm-01",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 500.0,
+      "os_name": "RHEL 8",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "uuid-2",
+      "name": "dev-sandbox",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Ubuntu 20.04",
+      "hypervisor": "Hyper-V"
+    },
+    {
+      "source_id": "uuid-3",
+      "name": "replica-db",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1500.0,
+      "os_name": "Windows Server 2019",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "uuid-4",
+      "name": "existing-app",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 200.0,
+      "os_name": "RHEL 7",
+      "hypervisor": "VMware"
+    }
+  ]
+}

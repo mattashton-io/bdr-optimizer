@@ -1,0 +1,44 @@
+{
+  "project_id": "my-gcp-project",
+  "location": "us-central1",
+  "backup_plan_id": "gold-plan",
+  "summary": {
+    "total_workloads_processed": 4,
+    "successful_bindings": 1,
+    "skipped_already_protected": 1,
+    "missing_gce_targets": 1,
+    "binding_failures": 1
+  },
+  "successful_bindings": [
+    {
+      "workload_name": "prod-vm-01",
+      "source_id": "uuid-1",
+      "bpa_id": "bpa-prod-vm-01",
+      "backup_plan": "projects/mock-project/locations/us-central1/backupPlans/gold-plan",
+      "bpa_resource_path": "projects/mock-project/locations/us-central1/backupPlanAssociations/bpa-prod-vm-01"
+    }
+  ],
+  "skipped_bindings": [
+    {
+      "workload_name": "existing-app",
+      "source_id": "uuid-4",
+      "bpa_id": "bpa-existing-app-existing",
+      "reason": "Already associated with Backup Plan."
+    }
+  ],
+  "missing_gce_targets": [
+    {
+      "workload_name": "dev-sandbox",
+      "source_id": "uuid-2",
+      "reason": "Target instance not found in Google Compute Engine. Ensure VM is migrated before onboarding to BDR."
+    }
+  ],
+  "binding_failures": [
+    {
+      "workload_name": "replica-db",
+      "source_id": "uuid-3",
+      "error_code": 403,
+      "error_message": "Permission backupdr.backupPlanAssociations.create denied on backupPlan resource."
+    }
+  ]
+}
