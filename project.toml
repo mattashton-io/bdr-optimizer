@@ -44,6 +44,7 @@ imports = [
 
 # Custom Local Skills
 local = [
+  "skills/vm-bdr-onboarding",       # Custom BDR VM discovery, parsing, and classification
   "skills/vault-orchestration",     # Custom BDR REST API orchestration logic
   "skills/bdr-cost-estimator"       # Custom BDR storage retention cost calculations
 ]
