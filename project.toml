@@ -3,6 +3,35 @@ name = "gcp-bdr-optimizer"
 description = "GCP Backup and Disaster Recovery (BDR) Optimization Agent. Helps optimize workload scoping, sizing, costs, and policy enforcement."
 version = "0.1.0"
 
+[execution]
+modes = [
+  "SIMULATION_PRE_MIGRATION",
+  "LIVE_GOVERNANCE"
+]
+
+[execution.modes_detail]
+SIMULATION_PRE_MIGRATION = """
+Triggered when the user uploads on-premises inventory asset files (e.g., RVTools XLSX/CSVs or Migration Center CSVs).
+- Operation: Parse on-premises inventory, apply protection tier rules, and compute pre-migration BDR cost projections.
+- Dependency: Does not require active GCP service credentials or corresponding live Compute Engine VMs. Runs as a high-fidelity simulation model.
+"""
+
+LIVE_GOVERNANCE = """
+Triggered when the user requests an audit of live GCP infrastructure or policies.
+- Operation: Connects via GCE and Backup-DR APIs/MCPs to query live running virtual machines and active BackupPlanAssociations (BPA).
+- Dependency: Checks and flags unprotected live cloud resources and compliance violations. Requires GCP permissions.
+"""
+
+[execution.reconciliation]
+dual_reporting = true
+rule = """
+When both on-premises asset inventory files are uploaded AND live GCP API access is enabled, the agent must generate a 2-part dual-mode summary report:
+- Section A: On-Premise Asset Pipeline (Pre-Migration Sizing Benchmark)
+- Section B: Active GCP Workload Protection Audit (Real-Time Cloud State)
+
+Do NOT raise an error or halt execution if on-premises VM names do not map directly to live GCP instance names. Treat them as complementary, overlapping datasets representing the transition pipeline.
+"""
+
 [[subagents]]
 name = "bdr-planner"
 description = "Specialized sub-agent for scoping, sizing, and estimating costs of workloads for GCP Backup and Disaster Recovery."
