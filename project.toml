@@ -32,6 +32,28 @@ When both on-premises asset inventory files are uploaded AND live GCP API access
 Do NOT raise an error or halt execution if on-premises VM names do not map directly to live GCP instance names. Treat them as complementary, overlapping datasets representing the transition pipeline.
 """
 
+[skills]
+# Import Standard Ecosystem Skills (from google/skills)
+imports = [
+  "google/skills/gcp-gcloud",       # For executing robust gcloud CLI commands
+  "google/skills/gcp-compute",      # For Compute Engine instance and disk discovery scans
+  "google/skills/gcp-bigquery",     # For executing Cloud Billing export datasets queries
+  "google/skills/gcp-logging",      # For operational and BDR audit log searching
+  "google/skills/code-interpreter"  # For dynamic Pandas parsing of uploaded RVTools and MC files
+]
+
+# Custom Local Skills
+local = [
+  "skills/vault-orchestration",     # Custom BDR REST API orchestration logic
+  "skills/bdr-cost-estimator"       # Custom BDR storage retention cost calculations
+]
+
+[delegation_flow]
+file_ingestion = { delegate_to = "google/skills/code-interpreter", task = "Parse uploaded spreadsheets (RVTools, MC CSVs) with Pandas and output normalized JSON." }
+cloud_discovery = { delegate_to = "google/skills/gcp-compute", task = "Scan and list live GCE virtual machine specs, zones, and disks." }
+bdr_vault_actions = { delegate_to = "skills/vault-orchestration", task = "Formulate and dispatch REST API payloads to configure Vaults or establish BackupPlanAssociations (BPA)." }
+cost_sizing = { delegate_to = "skills/bdr-cost-estimator", task = "Compute BDR cost estimations, regional rates delta-analysis, and retention lifespans." }
+
 [[subagents]]
 name = "bdr-planner"
 description = "Specialized sub-agent for scoping, sizing, and estimating costs of workloads for GCP Backup and Disaster Recovery."
