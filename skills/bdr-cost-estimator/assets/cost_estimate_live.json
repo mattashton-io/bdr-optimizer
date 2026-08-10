@@ -1,0 +1,17 @@
+{
+  "estimate_scope": "Live GCP Infrastructure",
+  "project_id": "my-gcp-project",
+  "calculated_at": "2026-08-10T21:55:27.617307Z",
+  "summary": {
+    "total_workloads_evaluated": 3,
+    "total_storage_gib": 1254.0,
+    "projected_monthly_storage_cost": 37.26,
+    "projected_monthly_management_cost": 12.54,
+    "projected_monthly_total_cost": 49.8
+  },
+  "projections": {
+    "30_day_total": 49.8,
+    "90_day_total": 156.87,
+    "365_day_total": 717.12
+  }
+}
