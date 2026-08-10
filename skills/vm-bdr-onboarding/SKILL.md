@@ -135,3 +135,30 @@ Once workloads are classified and grouped, cost modeling must be delegated to th
    ```
 3. **Execution Formula:** The `bdr-cost-estimator` calculates the final BDR licensing and vault storage fees:
    $$\text{BDR Fee} = (\text{Front-End Capacity (TB)} \times \text{License Rate}) + (\text{Back-End Storage (TB)} \times \text{Vault Storage Rate})$$
+
+---
+
+## 7. Dual-Mode Processing Strategy
+
+This skill supports dual-mode workload processing depending on the state of pre-migration inputs and live cloud access.
+
+### A. File Ingestion Branch (Pre-Migration Baseline)
+When a pre-migration spreadsheet (RVTools XLSX/CSVs or Migration Center CSVs) is uploaded:
+- **Parse & Validate:** Process all inventory rows using strict schema validation matching `vInfo`/`vDisk` or `vmInfo.csv`/`diskInfo.csv`.
+- **Cache Baseline:** Save the unified output to `normalized_workloads.json`.
+- **Classify Tiers:** Distribute virtual machines into BDR Protection Tiers (Tier 1/2/3) based on CPU, RAM, and storage size configurations.
+- **Estimate Sizing Cost:** Automatically delegate to `skills/bdr-cost-estimator` to project Backup Vault storage fees and licensing spend based on on-premises baseline metrics.
+
+### B. Live Cloud Ingestion Branch (Active Infrastructure)
+When a live cloud audit of active running resources is requested:
+- **Scan Cloud Resources:** Use the `gcloud-cli` skill or `Compute Engine MCP` tools to list running GCE instances inside the target project workspace.
+- **Cache Inventory:** Export results to `gce_inventory.json`.
+- **Check Protected State:** Cross-reference instances against Backup Plan Associations (BPA) queried via the GCP Backup & DR REST API to identify compliance gaps.
+
+### C. Combined Reconciliation Output
+When both pre-migration spreadsheets are uploaded AND active GCP credentials are enabled, compile and display a unified 2-part status report featuring this markdown layout:
+
+| Workload Source | Total Count | Primary Identifiers | Protection Status / Action |
+| :--- | :--- | :--- | :--- |
+| **On-Premise File (RVTools)** | 100 VMs | vSphere UUIDs / Names | Simulated Cost Sizing Complete ($X/mo) |
+| **Active GCP Project** | 10 VMs | GCE Instance IDs | Y Protected / Z Unprotected (Actionable) |
