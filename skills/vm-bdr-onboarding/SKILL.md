@@ -4,9 +4,15 @@ This skill provides a structured framework for discovering, evaluating, classify
 
 ---
 
-## 1. Data Ingestion Paths
+## 1. Data Ingestion Paths & Dynamic Parsing
 
 Onboarding supports two distinct on-premises hypervisor source ingestion paths. Column names and syntax must **match these schemas exactly** to prevent parsing failures in automated ingestion workflows.
+
+### Dynamic File Ingestion Protocol
+When the user uploads an RVTools export (`.xlsx` or CSV tabs) or Migration Center CSVs (`vmInfo.csv`, `diskInfo.csv`, `perfInfo.csv`):
+- **DO NOT** use static custom Python scripts for ingestion or validation.
+- **Delegate file processing** directly to `google/skills/code-interpreter`.
+- **Instruct 'code-interpreter'** to execute a python pandas script that dynamically inspects sheet headers, validates columns against the strict schemas defined below (e.g., `vInfo`, `vDisk`, `vmInfo`, `diskInfo`), and extracts active workloads.
 
 ### Path 1: VMware (vSphere) Sources (RVTools)
 The primary ingestion format for VMware environments is the RVTools export (either an `.xlsx` workbook containing these sheets, or separate `.csv` exports representing each tab).
@@ -96,8 +102,29 @@ To reconcile the baseline on-premises sizing with what is actually running in Go
 
 ---
 
-## 5. Expected Output Metadata Schema
+## 5. Expected Output & Normalized Workloads Schema
 
+### Normalized Workloads Schema (`normalized_workloads.json`)
+The `google/skills/code-interpreter` must save the dynamic parsing normalized output as an ADK artifact file named `normalized_workloads.json` with the following strict schema:
+
+```json
+{
+  "source_type": "RVTools" | "MigrationCenter",
+  "workloads": [
+    {
+      "source_id": "string",
+      "name": "string",
+      "cpus": int,
+      "memory_gib": float,
+      "consumed_disk_gib": float,
+      "os_name": "string",
+      "power_state": "poweredOn" | "OFF"
+    }
+  ]
+}
+```
+
+### Aggregated Inventory Metadata Schema (Optional Reconciliation Output)
 After merging and classifying baseline configurations, the aggregated inventory metadata should adhere to this JSON format:
 
 ```json
@@ -125,15 +152,16 @@ After merging and classifying baseline configurations, the aggregated inventory 
 
 ## 6. Sizing & Cost Estimator Delegation
 
-Once workloads are classified and grouped, cost modeling must be delegated to the `bdr-cost-estimator` skill.
+Once `normalized_workloads.json` is generated, automatically hand off and delegate the cost estimation process to the `bdr-cost-estimator` skill.
 
 ### Delegation Protocol:
-1. **Aggregate Grouping:** Compute total Front-End Capacity (TB) and CPU/Memory totals for each protection tier.
-2. **Invoke Estimator:** Pass the classified baseline data payload to the estimator:
+1. **Pre-Migration Hand-Off:** Once `normalized_workloads.json` is successfully generated, automatically invoke or delegate processing to `skills/bdr-cost-estimator` to evaluate storage, licensing, and replication costs.
+2. **Aggregate Grouping:** Compute total Front-End Capacity (TB) and CPU/Memory totals for each protection tier.
+3. **Invoke Estimator:** Pass the classified baseline data payload to the estimator:
    ```bash
    agy run bdr-cost-estimator --inventory-file assets/live_cloud_inventory.json
    ```
-3. **Execution Formula:** The `bdr-cost-estimator` calculates the final BDR licensing and vault storage fees:
+4. **Execution Formula:** The `bdr-cost-estimator` calculates the final BDR licensing and vault storage fees:
    $$\text{BDR Fee} = (\text{Front-End Capacity (TB)} \times \text{License Rate}) + (\text{Back-End Storage (TB)} \times \text{Vault Storage Rate})$$
 
 ---
@@ -144,10 +172,10 @@ This skill supports dual-mode workload processing depending on the state of pre-
 
 ### A. File Ingestion Branch (Pre-Migration Baseline)
 When a pre-migration spreadsheet (RVTools XLSX/CSVs or Migration Center CSVs) is uploaded:
-- **Parse & Validate:** Process all inventory rows using strict schema validation matching `vInfo`/`vDisk` or `vmInfo.csv`/`diskInfo.csv`.
-- **Cache Baseline:** Save the unified output to `normalized_workloads.json`.
+- **Dynamic Parse & Validate:** Process all inventory rows by delegating file processing to `google/skills/code-interpreter` executing a pandas script (DO NOT use static custom Python scripts) to inspect headers and validate columns against `vInfo`/`vDisk` or `vmInfo.csv`/`diskInfo.csv`.
+- **Cache Baseline:** Save the normalized output to the ADK artifact `normalized_workloads.json` adhering to the required JSON schema.
 - **Classify Tiers:** Distribute virtual machines into BDR Protection Tiers (Tier 1/2/3) based on CPU, RAM, and storage size configurations.
-- **Estimate Sizing Cost:** Automatically delegate to `skills/bdr-cost-estimator` to project Backup Vault storage fees and licensing spend based on on-premises baseline metrics.
+- **Sizing Cost Hand-Off:** Once `normalized_workloads.json` is generated, automatically delegate to `skills/bdr-cost-estimator` to project Backup Vault storage fees and licensing spend based on on-premises baseline metrics.
 
 ### B. Live Cloud Ingestion Branch (Active Infrastructure)
 When a live cloud audit of active running resources is requested:
