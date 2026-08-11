@@ -22,11 +22,11 @@ This skill calculates estimated licensing, storage, and cross-region egress spen
 
 ## 1. Input Ingestion Flexibility
 
-The cost estimator skill processes workload capacity profiles from either active or pre-migration phases of the workload lifecycle:
+The cost estimator skill accepts capacity profiles from either active infrastructure or pre-migration phases of the workload lifecycle:
 
 ### A. Pre-Migration Baseline (File Ingestion)
-- **Artifact:** `normalized_workloads.json`
-- **Source Tool:** Generated via `google/skills/code-interpreter` (which parses uploaded on-premises spreadsheets like a 100-VM RVTools xlsx/csv workbook).
+- **Artifact:** `normalized_workloads.json` (e.g., generated from the 100-VM RVTools mock file or Migration Center templates).
+- **Source Tool:** Generated via `google/skills/code-interpreter` (which parses uploaded on-premises spreadsheets).
 - **Target Tag:** `"Pre-Migration Simulation (File Upload)"`
 
 ### B. Live GCP Infrastructure (Active Cloud Ingestion)
@@ -38,34 +38,30 @@ The cost estimator skill processes workload capacity profiles from either active
 
 ## 2. Cost Sizing Mathematics & Pricing MCP Integration
 
-When computing storage and licensing projections, the agent must leverage custom billing engines:
+When computing storage and licensing projections, the agent must leverage the custom billing engine:
 
-1. **Calculate Base Capacities:** Sum up total allocated/consumed disk capacity in Gigabytes (GB) across the identified workloads.
-2. **Pricing MCP Invocation:** Call `mcp_servers/pricing_mcp.py` tool `estimate_vault_storage_cost(size_gib, retention_days, region)` to calculate baseline monthly fees:
-   - **Vault Storage Rates:** Charged at regional unit rates (e.g., standard base of $\$0.026$ / GB / month for Backup Vault storage).
-   - **BDR Management Licenses:** Add standard BDR management licensing fee ($\$0.010$ / GB / month) for protected workloads.
-3. **Cross-Region Replication Egress (Optional):**
-   - If the target Backup Vault resides in a secondary region for disaster recovery (cross-region replication):
-     * Sum up the estimated daily egress bandwidth requirements (front-end data changes).
-     * Multiply the egress volume by the regional egress unit fee (e.g., $\$0.12$ / GB for replication egress) to determine the net egress cost.
+1. **Calculate Base Capacities:** Sum up total allocated/consumed disk capacity in Gigabytes (GB) across the identified workloads (from either `normalized_workloads.json` or live GCE instances retrieved via `google/skills/gcp-compute`).
+2. **Pricing MCP Invocation:** Call the `'pricing_mcp'` tool `estimate_vault_storage_cost(size_gib, retention_days, region)` to calculate baseline monthly fees for three specific retention windows:
+   - **30-Day Retention**
+   - **90-Day Retention**
+   - **365-Day Retention**
+3. **Regional Rates & Licensing:** Include BDR management licensing fees alongside Backup Vault storage rates returned by the `'pricing_mcp'` tool.
 
 ---
 
-## 3. Structured Cost Reporting
+## 3. Structured Cost Reporting Comparison Table
 
-### A. JSON Artifact
-Write all compiled costs, metadata, and 30/90/365-day lifespans to the output JSON file: `cost_estimate_report.json` (complying with the standardized schema and correct estimate scope tag).
+The agent **MUST** present the user with a comparative markdown summary table directly in the chat interface using values retrieved from the `'pricing_mcp'` tool.
 
-### B. Markdown Summary Table
-In addition to generating the JSON artifact, the agent **MUST** present the user with a comparative markdown summary table. Use the following structured format:
-
-#### Cost Sizing Estimate Scope: `<Scope_Tag>`
+### Comparative Cost Sizing Estimate Scope: `<Scope_Tag>`
 
 | Retention Window | Total Storage (GB) | Est. Storage Cost | Est. License Cost | Net Monthly Spend | Projected Annual Spend |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **30-Day Retention** | 10,240 GB | $266.24 | $102.40 | $368.64 | $4,423.68 |
 | **90-Day Retention** | 16,384 GB (Accumulated) | $425.98 | $102.40 | $528.38 | $6,340.56 |
 | **365-Day Retention** | 24,576 GB (Accumulated) | $638.98 | $102.40 | $741.38 | $8,896.56 |
+
+*Note: Write the complete compiled costs and lifecycle reports to the output JSON file: `cost_estimate_report.json` as well.*
 
 ---
 
