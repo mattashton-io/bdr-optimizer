@@ -1,0 +1,29 @@
+{
+  "scope": "Pre-Migration Sizing Estimation",
+  "region": "us-central1",
+  "region_note": "Rates applied for region: us-central1",
+  "base_workload_size_gib": 55978,
+  "retention_scenarios": {
+    "30_day_retention": {
+      "effective_storage_gib": 55978,
+      "monthly_storage_cost": 1455.43,
+      "monthly_license_cost": 559.78,
+      "monthly_total": 2015.21,
+      "projected_annual_total": 24182.5
+    },
+    "90_day_retention": {
+      "effective_storage_gib": 156738.4,
+      "monthly_storage_cost": 4075.2,
+      "monthly_license_cost": 559.78,
+      "monthly_total": 4634.98,
+      "projected_annual_total": 55619.74
+    },
+    "365_day_retention": {
+      "effective_storage_gib": 464617.4,
+      "monthly_storage_cost": 12080.05,
+      "monthly_license_cost": 559.78,
+      "monthly_total": 12639.83,
+      "projected_annual_total": 151677.99
+    }
+  }
+}

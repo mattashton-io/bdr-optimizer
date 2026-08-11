@@ -22,10 +22,17 @@ import urllib.request
 import urllib.error
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
+from google.adk.tools import ToolContext, load_artifacts
 from google.genai import types
+
+from .app_utils.artifacts import save_files_as_artifacts, save_json_artifact
 
 MODEL = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
 
@@ -60,8 +67,9 @@ def _get_auth_token() -> tuple[Optional[str], Optional[Dict[str, Any]]]:
         }
 
 
-def scan_live_gce_instances(project_id: str) -> str:
-    """Discovers active Google Compute Engine instances, machine types, zones, and attached disks.
+async def scan_live_gce_instances(project_id: str, tool_context: Optional[ToolContext] = None) -> str:
+    """Discovers active Google Compute Engine instances, machine types, zones, and attached disks
+    and registers 'live_cloud_inventory.json' as an ADK artifact.
 
     Args:
         project_id: The target GCP Project ID to scan.
@@ -133,9 +141,13 @@ def scan_live_gce_instances(project_id: str) -> str:
             "instances": instances
         }
 
-        os.makedirs("assets", exist_ok=True)
-        with open("assets/live_cloud_inventory.json", "w", encoding="utf-8") as f:
-            json.dump(output_payload, f, indent=2)
+        # Save to local file & register into ADK ArtifactService
+        if tool_context:
+            await save_json_artifact(tool_context, "live_cloud_inventory.json", output_payload)
+        else:
+            os.makedirs("assets", exist_ok=True)
+            with open("assets/live_cloud_inventory.json", "w", encoding="utf-8") as f:
+                json.dump(output_payload, f, indent=2)
 
         return json.dumps(output_payload, indent=2)
 
@@ -274,8 +286,17 @@ def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, reten
         return json.dumps({"status": "ERROR", "error_type": "NETWORK_ERROR", "cause": str(e)}, indent=2)
 
 
-def create_gcp_plan_association(project_id: str, location: str, plan_id: str, instance_name: str, instance_self_link: str, user_confirmed: bool = False) -> str:
-    """Binds a Compute Engine instance to a target Backup Plan (requires explicit user confirmation).
+async def create_gcp_plan_association(
+    project_id: str,
+    location: str,
+    plan_id: str,
+    instance_name: str,
+    instance_self_link: str,
+    user_confirmed: bool = False,
+    tool_context: Optional[ToolContext] = None
+) -> str:
+    """Binds a Compute Engine instance to a target Backup Plan (requires explicit user confirmation)
+    and saves association report as an ADK artifact.
 
     Args:
         project_id: Target GCP project ID.
@@ -325,7 +346,10 @@ def create_gcp_plan_association(project_id: str, location: str, plan_id: str, in
     try:
         with urllib.request.urlopen(req) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            return json.dumps({"status": "SUCCESS", "bpa": data}, indent=2)
+            result = {"status": "SUCCESS", "bpa": data}
+            if tool_context:
+                await save_json_artifact(tool_context, f"bdr_association_{instance_name}.json", result)
+            return json.dumps(result, indent=2)
     except urllib.error.HTTPError as e:
         return json.dumps({
             "status": "ERROR",
@@ -393,6 +417,7 @@ Follow these strict operating rules:
 3. CRITICAL SAFEGUARD: Never mutate infrastructure or bind policies (create_gcp_backup_vault or create_gcp_plan_association) without explicit user confirmation in chat.
 4. When dependencies or credentials fail, return developer-friendly error messages with remediation instructions.
 5. Notify teams using send_chat_summary when onboarding operations complete.
+6. All scanned inventories and association reports are automatically saved to ADK Artifacts.
 """,
     tools=[
         scan_live_gce_instances,
@@ -400,12 +425,15 @@ Follow these strict operating rules:
         list_gcp_backup_plans,
         create_gcp_backup_vault,
         create_gcp_plan_association,
-        send_chat_summary
+        send_chat_summary,
+        load_artifacts,
     ],
+    before_model_callback=save_files_as_artifacts,
 )
 
 app = App(
     root_agent=root_agent,
     name="app",
 )
+
 

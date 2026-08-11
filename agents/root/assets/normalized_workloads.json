@@ -1,0 +1,906 @@
+{
+  "source_type": "vmware-xlsx",
+  "source_file": "RVTools_export_demo-100.xlsx",
+  "workloads": [
+    {
+      "source_id": "038d2273-6487-4917-9a5b-fe0ae34276a8",
+      "name": "appsrv-prd-001",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 150.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "bdfeb284-e58b-48b7-a8d0-4e212604cdd0",
+      "name": "dbsrv-prd-002",
+      "cpus": 16,
+      "memory_gib": 32.0,
+      "total_disk_gib": 660.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "8c9c1b80-48b5-4ce0-a1ad-428b9ce73cf6",
+      "name": "dbsrv-prd-003",
+      "cpus": 16,
+      "memory_gib": 32.0,
+      "total_disk_gib": 800.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "07408a41-84c2-454d-9981-45f3ca0c5137",
+      "name": "dbsrv-prd-004",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 800.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "d3ac58f9-0a6b-4921-ba4c-272bc7601ead",
+      "name": "appsrv-prd-005",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 260.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "9051f7b1-2d9e-4d01-aa90-d185c7470447",
+      "name": "websrv-prd-006",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "45ff1f4f-d041-4bf8-99f6-af94b600592b",
+      "name": "websrv-prd-007",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "3a017efb-84a7-4b08-b244-f8250db13e4a",
+      "name": "dbsrv-prd-008",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 1174.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "b7feeca5-a547-4639-a97f-ae616ec47b66",
+      "name": "websrv-prd-009",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "cde94d48-7806-49a0-afe6-b889105f5f8d",
+      "name": "websrv-prd-010",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2095cbb8-cd47-4d7e-abe5-7031447766f5",
+      "name": "dbsrv-prd-011",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1184.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "33629737-42ba-4197-b769-64d988e6be0c",
+      "name": "websrv-prd-012",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0cbc6a3f-4b21-40a1-aa92-db6f43841041",
+      "name": "websrv-prd-013",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "a0cc032c-c939-4747-989d-37715597b2ea",
+      "name": "dbsrv-prd-014",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 400.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "9bf6950e-1bb0-45d3-9aef-7ea72e31918d",
+      "name": "dbsrv-prd-015",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 2148.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "13cea1c2-108f-460e-890e-2304ab85b59a",
+      "name": "appsrv-prd-016",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 160.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "7c9bc106-95ac-4f22-bcd7-989c11901f09",
+      "name": "dbsrv-prd-017",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 1324.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "287fbc54-ebc3-4baa-a872-363b262b48d8",
+      "name": "appsrv-prd-018",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 1084.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "1c2e4168-30f1-4bbd-8dc6-06a659063698",
+      "name": "dbsrv-prd-019",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 760.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "e3c7d41a-4a3b-4e70-8fde-64202df0322b",
+      "name": "dbsrv-prd-020",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1584.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "db109024-3ba1-4933-91ae-b82778176cf6",
+      "name": "websrv-prd-021",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "1532e303-0e65-4d37-be3d-c8ab294c621b",
+      "name": "websrv-prd-022",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "9393fbe3-8f1a-4ca4-a72e-28d7cab3f540",
+      "name": "appsrv-prd-023",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 300.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "75ddddae-80a2-42a4-8dba-dfc246b90927",
+      "name": "dbsrv-prd-024",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 750.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "55a524b0-3b52-4551-9601-0a501c86f2da",
+      "name": "websrv-prd-025",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "79b65153-d7e9-41ed-8b0a-7116f9e5c45c",
+      "name": "appsrv-prd-026",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 300.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "ef0b5d28-c3b7-4d4b-8f0b-a82f3824a748",
+      "name": "dbsrv-prd-027",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 800.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "de3f6188-3ed2-4b2a-bf31-87c6cbd9c649",
+      "name": "dbsrv-prd-028",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 300.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "becf3c3c-b420-4a68-9149-5d72800c419d",
+      "name": "appsrv-prd-029",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 300.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "50d516c1-5405-4919-8440-0c16b1a07560",
+      "name": "appsrv-prd-030",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 550.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "9fdf03b3-56e2-4229-b0bb-ce997a75204f",
+      "name": "websrv-prd-031",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "a986e848-599d-48ee-ae70-91153e2ff80e",
+      "name": "appsrv-prd-032",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 150.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2b13723b-d770-42dd-991f-93a506fc7807",
+      "name": "websrv-prd-033",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "f08b4d7b-ee80-45e7-a1c3-9fa64d4f5a27",
+      "name": "dbsrv-prd-034",
+      "cpus": 16,
+      "memory_gib": 16.0,
+      "total_disk_gib": 350.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "28294b73-49c7-4d0a-81dd-d041b1350e07",
+      "name": "dbsrv-prd-035",
+      "cpus": 16,
+      "memory_gib": 32.0,
+      "total_disk_gib": 1174.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "fdc6d59f-68b0-4774-81be-a798add3604a",
+      "name": "dbsrv-prd-036",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 360.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "505ac7a1-4ebb-4c86-a761-6adc8b4f496f",
+      "name": "websrv-prd-037",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "3cabc059-0bc0-4d9e-b3d8-eb1c8d2a0c64",
+      "name": "dbsrv-prd-038",
+      "cpus": 16,
+      "memory_gib": 16.0,
+      "total_disk_gib": 350.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "377e3a16-28b9-4127-adfe-174632ea941b",
+      "name": "dbsrv-prd-039",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1324.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "514e7973-187d-4842-9f12-74c86ddac7b0",
+      "name": "websrv-prd-040",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "fca3d5a9-a9a6-42d7-943a-026a4955c775",
+      "name": "websrv-prd-041",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2214b221-b1c1-4adf-842b-ecf667c7c1b4",
+      "name": "websrv-prd-042",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "b8a6c3dc-9999-4450-85b7-363fc8c46f48",
+      "name": "appsrv-prd-043",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 250.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "6ebcffe2-682c-4952-9214-52174ec597d0",
+      "name": "websrv-prd-044",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "40c4b25e-2aeb-4232-abee-45d80e3626a9",
+      "name": "dbsrv-prd-045",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 1100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "44d6469a-cbe4-49d4-b42b-f15272e1bd80",
+      "name": "websrv-prd-046",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "4d42f2f1-a9f9-40a9-8d13-f37c0d9c4999",
+      "name": "appsrv-prd-047",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 560.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "b36ab7df-ba52-4ac1-9619-e8845006bba5",
+      "name": "dbsrv-prd-048",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1284.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "3dda8ec8-3e8f-46f0-bad6-e3943afd32c9",
+      "name": "appsrv-prd-049",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 1084.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "e51887a1-553c-424c-a73b-6f473922841a",
+      "name": "dbsrv-prd-050",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 660.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0dcc65c5-3f87-4843-bc08-9c41cca89fcc",
+      "name": "dbsrv-prd-051",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 260.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "583b241f-ca5e-4474-b877-34dd3af99c4b",
+      "name": "appsrv-prd-052",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 1074.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "8378997e-849c-4ac3-983d-1fd5867f72ac",
+      "name": "appsrv-prd-053",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 150.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "f1843804-6d8a-4ef5-8ff8-4a1e9d836ce2",
+      "name": "appsrv-prd-054",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 200.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0620f605-2e9e-4864-be0e-086581d99716",
+      "name": "dbsrv-prd-055",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 650.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "ab9518c4-52d3-4a63-a4e1-d3917f1c8d7a",
+      "name": "websrv-prd-056",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "b9357062-2451-4db1-b47e-1baa41fc42a5",
+      "name": "dbsrv-prd-057",
+      "cpus": 16,
+      "memory_gib": 16.0,
+      "total_disk_gib": 750.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "e42afc40-c5a8-4eed-9b38-edac9da057e1",
+      "name": "appsrv-prd-058",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 1074.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "ecc8d0cd-4e57-4391-be1e-8a9348f2f5a2",
+      "name": "appsrv-prd-059",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 600.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "fa335a05-8a47-49f0-a4f6-04a976ba60bc",
+      "name": "appsrv-prd-060",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 1084.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "e52268c7-f4e3-4a52-84f7-9a9b60d693c0",
+      "name": "dbsrv-prd-061",
+      "cpus": 16,
+      "memory_gib": 16.0,
+      "total_disk_gib": 350.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "431e2ad8-feb0-49ed-8e05-600958fb2075",
+      "name": "dbsrv-prd-062",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 1284.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2cad6ad3-1468-400a-bc00-2f1ff7bb28af",
+      "name": "appsrv-prd-063",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 250.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "53338d7f-74bb-4d94-995a-44edfb48dfb6",
+      "name": "appsrv-prd-064",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 1124.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2e9c22a8-a88f-4cc7-87e5-956adaea5141",
+      "name": "dbsrv-prd-065",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1624.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "bd26f939-c88f-4cb6-ade3-5737a82ac05e",
+      "name": "dbsrv-prd-066",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1574.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "ada0d187-47d9-47d3-9f2f-1008a906e3ab",
+      "name": "websrv-prd-067",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "951e65a3-1071-4bb1-8f74-fa7da90f39b6",
+      "name": "dbsrv-prd-068",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 350.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "262cfb96-6ddd-4059-9d53-b83c7e77a56e",
+      "name": "websrv-prd-069",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "57b79cb9-ca31-479a-b59f-4e470b8b0e70",
+      "name": "appsrv-prd-070",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 560.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "bdaca181-1d21-419c-b8e2-ec5e9cf82e90",
+      "name": "dbsrv-prd-071",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1574.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "aa1d0458-3303-4464-84d0-6162e2d03548",
+      "name": "websrv-prd-072",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "e4ac17e7-7a25-4780-987a-f82f24852454",
+      "name": "dbsrv-prd-073",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1324.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "8e0b1251-f382-4a13-953b-83bed96c1916",
+      "name": "dbsrv-prd-074",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 400.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "c576ed86-fb3b-4aca-bb07-627412f1d8ab",
+      "name": "appsrv-prd-075",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 1074.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "82037c10-b168-462f-a12f-426c87286a7e",
+      "name": "dbsrv-prd-076",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 1574.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "7be65247-c543-43d8-9a87-39c2afb24875",
+      "name": "appsrv-prd-077",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 300.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "4de71eae-f23e-433c-9500-513142713702",
+      "name": "websrv-prd-078",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "c777473f-151c-4bb8-925a-962f01424597",
+      "name": "dbsrv-prd-079",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 250.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "05a5ce7e-f39d-4e78-a718-68e576f2191e",
+      "name": "dbsrv-prd-080",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 260.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "d60a9e09-1254-4b7d-bdf0-ed45f5a41674",
+      "name": "dbsrv-prd-081",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 1324.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "7e334b0a-36c2-4be8-883f-cd26c32e44eb",
+      "name": "appsrv-prd-082",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 150.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "62fc9b29-311a-49f4-93b9-b0fbd43cca17",
+      "name": "appsrv-prd-083",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 150.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0835c69d-ae4d-4b62-a72c-dbacad2ce46b",
+      "name": "appsrv-prd-084",
+      "cpus": 4,
+      "memory_gib": 8.0,
+      "total_disk_gib": 1124.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2879dbf5-7961-448f-8d83-d69845a9e2f3",
+      "name": "websrv-prd-085",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 50.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "b8f55d99-9e17-4c0a-802a-a0e8e19703c3",
+      "name": "websrv-prd-086",
+      "cpus": 2,
+      "memory_gib": 8.0,
+      "total_disk_gib": 50.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "6a673208-d824-44e4-8472-2f9773be469a",
+      "name": "websrv-prd-087",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "879e94b2-a508-49ec-85bd-64c06e0adb0b",
+      "name": "websrv-prd-088",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "bd631a3f-b577-47a8-a941-8c5bd2441a8e",
+      "name": "websrv-prd-089",
+      "cpus": 2,
+      "memory_gib": 4.0,
+      "total_disk_gib": 60.0,
+      "os_name": "Red Hat Enterprise Linux 8 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "a3ee8e1c-432e-48ab-90d0-7e564da9fc99",
+      "name": "appsrv-prd-090",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 150.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "05767abc-dad5-48de-af88-022a492e8551",
+      "name": "dbsrv-prd-091",
+      "cpus": 16,
+      "memory_gib": 32.0,
+      "total_disk_gib": 1224.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "02523a73-e6c1-44d5-8553-0dfcb398d994",
+      "name": "dbsrv-prd-092",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 350.0,
+      "os_name": "Ubuntu Linux (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "90fcf4dd-8a47-4fca-beff-3f42bafaed8e",
+      "name": "appsrv-prd-093",
+      "cpus": 8,
+      "memory_gib": 8.0,
+      "total_disk_gib": 250.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "71485ed5-7f6e-477f-9295-eb0bf127ae92",
+      "name": "dbsrv-prd-094",
+      "cpus": 8,
+      "memory_gib": 64.0,
+      "total_disk_gib": 2098.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "f66f64ee-8791-4e58-92b9-06d5bdde2e95",
+      "name": "appsrv-prd-095",
+      "cpus": 8,
+      "memory_gib": 16.0,
+      "total_disk_gib": 600.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "a12dcaee-1453-4581-904d-f042aaf54014",
+      "name": "appsrv-prd-096",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 600.0,
+      "os_name": "Microsoft Windows Server 2022 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0d15cdb3-4f66-48cb-b21d-ef61282c3881",
+      "name": "dbsrv-prd-097",
+      "cpus": 16,
+      "memory_gib": 64.0,
+      "total_disk_gib": 350.0,
+      "os_name": "CentOS 7 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "0ec18b70-e0d1-4a89-ab90-c4b6332d0ce5",
+      "name": "websrv-prd-098",
+      "cpus": 4,
+      "memory_gib": 4.0,
+      "total_disk_gib": 100.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "2dc3b524-1428-4837-b8fc-141fb901a070",
+      "name": "dbsrv-prd-099",
+      "cpus": 8,
+      "memory_gib": 32.0,
+      "total_disk_gib": 700.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    },
+    {
+      "source_id": "a17f3aa8-aab6-4488-bdd0-2fa73e82c016",
+      "name": "appsrv-prd-100",
+      "cpus": 4,
+      "memory_gib": 16.0,
+      "total_disk_gib": 600.0,
+      "os_name": "Microsoft Windows Server 2019 (64-bit)",
+      "hypervisor": "VMware"
+    }
+  ]
+}

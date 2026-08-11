@@ -19,11 +19,19 @@ import os
 import sys
 import json
 import csv
+import glob
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
+from google.adk.tools import ToolContext, load_artifacts
 from google.genai import types
+
+from .app_utils.artifacts import save_files_as_artifacts, save_json_artifact
 
 MODEL = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
 
@@ -56,29 +64,87 @@ REGIONAL_RATES = {
 }
 
 
-def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: Optional[str] = None) -> str:
-    """Parses on-premises spreadsheet inventory (RVTools CSV/XLSX or Migration Center CSV) and normalizes it.
+def _resolve_file_path(file_path: Optional[str], tool_context: Optional[ToolContext] = None) -> tuple[Optional[str], Optional[str]]:
+    """Resolves the physical or artifact file path and infers source type."""
+    resolved_path = file_path
+
+    # If file_path is omitted or not found directly, check session state and uploads directory
+    if not resolved_path or not os.path.exists(resolved_path):
+        if tool_context and hasattr(tool_context, "state"):
+            state_path = tool_context.state.get("latest_uploaded_file_path")
+            if state_path and os.path.exists(state_path):
+                resolved_path = state_path
+            elif tool_context.state.get("latest_uploaded_file"):
+                up_name = tool_context.state.get("latest_uploaded_file")
+                cand = os.path.join("uploads", up_name)
+                if os.path.exists(cand):
+                    resolved_path = cand
+
+    if not resolved_path or not os.path.exists(resolved_path):
+        # Look in uploads/ directory for the most recently uploaded file
+        if os.path.exists("uploads"):
+            files = glob.glob("uploads/*")
+            if files:
+                resolved_path = max(files, key=os.path.getmtime)
+
+    if not resolved_path or not os.path.exists(resolved_path):
+        # Check assets/ directory
+        if os.path.exists("assets"):
+            files = glob.glob("assets/*.xlsx") + glob.glob("assets/*.csv")
+            if files:
+                resolved_path = max(files, key=os.path.getmtime)
+
+    if not resolved_path or not os.path.exists(resolved_path):
+        return None, None
+
+    # Infer source_type based on file extension and naming
+    basename = os.path.basename(resolved_path).lower()
+    if basename.endswith(".xlsx"):
+        source_type = "vmware-xlsx"
+    elif "vminfo" in basename or "diskinfo" in basename or "migration" in basename:
+        source_type = "migration-center-csv"
+    elif "vinfo" in basename or "vdisk" in basename or "rvtools" in basename:
+        source_type = "vmware-csv"
+    elif basename.endswith(".csv"):
+        source_type = "vmware-csv"
+    else:
+        source_type = "vmware-xlsx"
+
+    return resolved_path, source_type
+
+
+async def parse_and_normalize_inventory(
+    file_path: Optional[str] = None,
+    source_type: Optional[str] = None,
+    vdisk_path: Optional[str] = None,
+    tool_context: Optional[ToolContext] = None
+) -> str:
+    """Parses on-premises spreadsheet inventory (RVTools CSV/XLSX or Migration Center CSV),
+    normalizes the workload metrics, and registers 'normalized_workloads.json' as an ADK artifact.
 
     Args:
-        source_type: One of 'vmware-csv', 'vmware-xlsx', or 'migration-center-csv'.
-        file_path: Absolute or relative path to the primary inventory file (e.g., vInfo.csv, RVTools.xlsx, vmInfo.csv).
-        vdisk_path: Optional path to diskInfo.csv or vDisk.csv for disk size aggregation.
+        file_path: Path to the uploaded spreadsheet (e.g. RVTools.xlsx, vInfo.csv). If omitted, automatically resolves latest uploaded artifact.
+        source_type: Optional source type ('vmware-xlsx', 'vmware-csv', 'migration-center-csv'). Inferred automatically if omitted.
+        vdisk_path: Optional path to vDisk.csv or diskInfo.csv for multi-disk totals.
 
     Returns:
-        JSON string summary of normalized workloads and output artifact path.
+        JSON string summarizing normalized workloads and artifact registration details.
     """
-    if not os.path.exists(file_path):
+    resolved_path, inferred_type = _resolve_file_path(file_path, tool_context)
+    if not resolved_path:
         return json.dumps({
             "status": "ERROR",
             "error_type": "FILE_NOT_FOUND_ERROR",
-            "message": f"Input file not found at path: {file_path}",
-            "remediation": "Verify the file path exists and re-run with the correct file location."
+            "message": f"No uploaded spreadsheet or inventory file found. Provided path: {file_path}",
+            "remediation": "Upload an RVTools (.xlsx/.csv) or Migration Center (.csv) export file and re-run."
         }, indent=2)
+
+    actual_source_type = source_type or inferred_type
 
     workloads = []
 
-    if source_type in ["vmware-csv", "vmware-xlsx"]:
-        if source_type == "vmware-xlsx":
+    if actual_source_type in ["vmware-csv", "vmware-xlsx"]:
+        if actual_source_type == "vmware-xlsx":
             try:
                 import openpyxl
             except ImportError:
@@ -90,7 +156,7 @@ def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: 
                     "remediation": "Install openpyxl by running: pip install openpyxl"
                 }, indent=2)
             
-            wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
+            wb = openpyxl.load_workbook(resolved_path, read_only=True, data_only=True)
             if "vInfo" not in wb.sheetnames:
                 return json.dumps({
                     "status": "ERROR",
@@ -125,7 +191,7 @@ def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: 
                 })
 
         else: # vmware-csv
-            with open(file_path, mode='r', encoding='utf-8-sig') as f:
+            with open(resolved_path, mode='r', encoding='utf-8-sig') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     vm_name = row.get("VM") or "unknown-vm"
@@ -154,7 +220,7 @@ def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: 
                         "hypervisor": "VMware"
                     })
 
-    elif source_type == "migration-center-csv":
+    elif actual_source_type == "migration-center-csv":
         disk_totals = {}
         if vdisk_path and os.path.exists(vdisk_path):
             with open(vdisk_path, mode='r', encoding='utf-8-sig') as f:
@@ -167,7 +233,7 @@ def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: 
                         size_gib = 0.0
                     disk_totals[mid] = disk_totals.get(mid, 0.0) + size_gib
 
-        with open(file_path, mode='r', encoding='utf-8-sig') as f:
+        with open(resolved_path, mode='r', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             for row in reader:
                 mid = row.get("MachineId") or "unknown-id"
@@ -201,20 +267,32 @@ def parse_and_normalize_inventory(source_type: str, file_path: str, vdisk_path: 
         return json.dumps({
             "status": "ERROR",
             "error_type": "UNSUPPORTED_SOURCE_TYPE",
-            "message": f"Unsupported source_type '{source_type}'. Supported: vmware-csv, vmware-xlsx, migration-center-csv.",
+            "message": f"Unsupported source_type '{actual_source_type}'. Supported: vmware-csv, vmware-xlsx, migration-center-csv.",
             "remediation": "Provide one of the supported source types: 'vmware-csv', 'vmware-xlsx', or 'migration-center-csv'."
         }, indent=2)
 
-    output_path = "normalized_workloads.json"
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump({"source_type": source_type, "workloads": workloads}, f, indent=2)
+    payload = {
+        "source_type": actual_source_type,
+        "source_file": os.path.basename(resolved_path),
+        "workloads": workloads
+    }
+
+    # Save to local file & register into ADK ArtifactService
+    if tool_context:
+        await save_json_artifact(tool_context, "normalized_workloads.json", payload)
+    else:
+        with open("normalized_workloads.json", "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
 
     total_storage = sum(w["total_disk_gib"] for w in workloads)
     return json.dumps({
         "status": "SUCCESS",
+        "parsed_file": os.path.basename(resolved_path),
+        "source_type": actual_source_type,
         "workloads_parsed_count": len(workloads),
         "total_storage_gib": round(total_storage, 2),
-        "output_artifact": output_path
+        "output_artifact": "normalized_workloads.json",
+        "adk_artifact_registered": True
     }, indent=2)
 
 
@@ -245,15 +323,20 @@ def get_regional_rates(region: str) -> str:
     }, indent=2)
 
 
-def estimate_bdr_costs(size_gib: float, region: str = "us-central1") -> str:
-    """Calculates multi-tier BDR storage and licensing costs across 30-Day, 90-Day, and 365-Day retention windows.
+async def estimate_bdr_costs(
+    size_gib: float,
+    region: str = "us-central1",
+    tool_context: Optional[ToolContext] = None
+) -> str:
+    """Calculates multi-tier BDR storage and licensing costs across 30-Day, 90-Day, and 365-Day retention windows
+    and registers 'cost_estimate_report.json' as an ADK artifact.
 
     Args:
         size_gib: Total front-end backup workload size in GiB.
         region: GCP region name (defaults to us-central1).
 
     Returns:
-        JSON string with comparative cost estimates for 30-day, 90-day, and 365-day retention.
+        JSON string with comparative cost estimates and artifact confirmation.
     """
     clean_region = region.lower().strip()
     if clean_region not in REGIONAL_RATES:
@@ -308,8 +391,12 @@ def estimate_bdr_costs(size_gib: float, region: str = "us-central1") -> str:
         }
     }
 
-    with open("cost_estimate_report.json", "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2)
+    # Save to local file & register into ADK ArtifactService
+    if tool_context:
+        await save_json_artifact(tool_context, "cost_estimate_report.json", report)
+    else:
+        with open("cost_estimate_report.json", "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2)
 
     return json.dumps(report, indent=2)
 
@@ -357,21 +444,25 @@ root_agent = Agent(
 Your purpose is to parse on-premises asset inventory spreadsheets (RVTools, Migration Center), classify workloads into BDR Protection Tiers (Tier 1 Gold, Tier 2 Silver, Tier 3 Bronze), and calculate accurate pre-migration Backup & DR cost estimations.
 
 Follow these strict operating rules:
-1. Parse uploaded inventory files using the parse_and_normalize_inventory tool.
+1. When a spreadsheet is uploaded or available in artifacts, immediately invoke parse_and_normalize_inventory without asking the user for the filename or hypervisor type.
 2. In case of missing dependencies or file schema errors, surface clear, developer-friendly error messages with remediation instructions.
 3. Compute BDR storage, licensing, and retention projections using estimate_bdr_costs and calculate_retention_delta.
 4. Always generate structured markdown comparison tables for 30-Day, 90-Day, and 365-Day retention windows in your responses.
+5. All generated reports (normalized_workloads.json, cost_estimate_report.json) are automatically saved to ADK Artifacts.
 """,
     tools=[
         parse_and_normalize_inventory,
         get_regional_rates,
         estimate_bdr_costs,
-        calculate_retention_delta
+        calculate_retention_delta,
+        load_artifacts,
     ],
+    before_model_callback=save_files_as_artifacts,
 )
 
 app = App(
     root_agent=root_agent,
     name="app",
 )
+
 

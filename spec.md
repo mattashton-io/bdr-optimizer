@@ -185,3 +185,22 @@
   * `ERROR` (Red): API failures, permission errors, or quota exceptions.
 * **Webhook Failure Handling:**
   * If webhook delivery fails (e.g. 404, 401, network timeout), output a developer-friendly error message indicating the HTTP status code, response body, and verification steps for the webhook URL.
+
+---
+
+## **10. ADK Artifacts & File Ingestion Architecture**
+
+* **ADK Artifacts Standard (`https://adk.dev/artifacts/`):**
+  * **User Upload Ingestion (`before_model_callback=save_files_as_artifacts`):**
+    * When a user uploads a spreadsheet (e.g. `RVTools_export.xlsx`, `vInfo.csv`, `vmInfo.csv`) via the ADK UI/Playground, `save_files_as_artifacts` automatically intercepts the user message parts.
+    * Calls `callback_context.save_artifact(filename, artifact=part)` so the file is stored in the session's ADK `ArtifactService` and becomes immediately visible in the **Artifacts** tab.
+    * Saves a local copy in `uploads/<filename>` for direct parser tools and records metadata in `callback_context.state`.
+    * Injects prompt metadata so agents proceed with automated ingestion without redundantly asking the user for the file name or hypervisor format.
+  * **Artifact Inspection Tool (`load_artifacts`):**
+    * All agents (`bdr-coordinator`, `bdr-planner`, `bdr-orchestrator`) must include `load_artifacts` from `google.adk.tools` in their registered toolsets.
+  * **Generated Output Artifacts:**
+    * `normalized_workloads.json`: Saved to ADK Artifacts by `bdr-planner` after parsing spreadsheets.
+    * `cost_estimate_report.json`: Saved to ADK Artifacts by `bdr-planner` after computing 30/90/365-day retention projections.
+    * `live_cloud_inventory.json`: Saved to ADK Artifacts by `bdr-orchestrator` after scanning live GCE instances.
+    * `bdr_association_report.json`: Saved to ADK Artifacts by `bdr-orchestrator` upon binding BackupPlanAssociations.
+
