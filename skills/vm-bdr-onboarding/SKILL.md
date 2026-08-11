@@ -6,60 +6,43 @@ This skill provides a structured framework for discovering, evaluating, classify
 
 ## 1. Data Ingestion Paths & Dynamic Parsing
 
-Onboarding supports two distinct on-premises hypervisor source ingestion paths. Column names and syntax must **match these schemas exactly** to prevent parsing failures in automated ingestion workflows.
+Onboarding supports two distinct on-premises hypervisor source ingestion paths. Column names and syntax must match the strict schemas below exactly to prevent parsing failures in automated ingestion workflows.
 
-### Dynamic File Ingestion Protocol
-When the user uploads an RVTools export (`.xlsx` or CSV tabs) or Migration Center CSVs (`vmInfo.csv`, `diskInfo.csv`, `perfInfo.csv`):
-- **DO NOT** use static custom Python scripts for ingestion or validation.
-- **Delegate file processing** directly to `google/skills/code-interpreter`.
-- **Instruct 'code-interpreter'** to execute a python pandas script that dynamically inspects sheet headers, validates columns against the strict schemas defined below (e.g., `vInfo`, `vDisk`, `vmInfo`, `diskInfo`), and extracts active workloads.
+### Ingestion Instructions:
+- **No Custom Parsers:** Do NOT use static custom local Python scripts or custom parsers for spreadsheet file ingestion.
+- **Direct Delegation:** Pass uploaded spreadsheet files (RVTools `.xlsx` or CSV tabs, or Migration Center CSVs) directly to `google/skills/code-interpreter` for processing.
+- **Pandas Processing:** Instruct `google/skills/code-interpreter` to execute a pandas script that inspects sheet/file headers, validates columns against the strict header templates specified below, and extracts active workloads.
+
+---
+
+## 2. Strict Header Rules
+
+The `google/skills/code-interpreter` must validate that uploaded files conform to these exact headers:
 
 ### Path 1: VMware (vSphere) Sources (RVTools)
 The primary ingestion format for VMware environments is the RVTools export (either an `.xlsx` workbook containing these sheets, or separate `.csv` exports representing each tab).
 
-#### `vInfo` Schema
-```
-VM, Powerstate, Template, Config status, DNS Name, Connection state, Guest state, CPUs, Memory, Active Memory, NICs, Disks, Total disk capacity MiB, Provisioned MiB, In Use MiB, Primary IP Address, Network #1, Datacenter, Cluster, Host, Folder, OS according to the configuration file, OS according to the VMware Tools, VM ID, VM UUID, VI SDK Server, VI SDK API Version
-```
+#### `vInfo` Strict Headers:
+`VM, Powerstate, CPUs, Memory, Active Memory, Disks, Provisioned MiB, In Use MiB, OS according to the configuration file, VM UUID`
 
-#### `vCPU` Schema
-```
-VM, Powerstate, CPUs, Sockets, Cores p/s, Cluster, Host, OS according to the configuration file, OS according to the VMware Tools, VM ID, VM UUID, VI SDK Server
-```
-
-#### `vMemory` Schema
-```
-VM, Powerstate, Size MiB, Consumed, Cluster, Host, OS according to the configuration file, VM ID, VM UUID, VI SDK Server
-```
-
-#### `vDisk` Schema
-```
-VM, Powerstate, Disk, Disk Key, Capacity MiB, Disk Mode, Thin, Controller, Disk Path, Raw Comp. Mode, Datacenter, Cluster, Host, OS according to the configuration file, OS according to the VMware Tools, VM ID, VM UUID, VI SDK Server
-```
-
----
+#### `vDisk` Strict Headers:
+`VM, Powerstate, Disk, Capacity MiB, Disk Mode`
 
 ### Path 2: Hyper-V or Non-VMware (e.g., Nutanix) Sources
 For Non-VMware hypervisors, manual data upload templates compliant with the GCP Migration Center schema are required. Files must be uploaded to the `assets/migration-center-manual-upload/` directory.
 
-#### `vmInfo.csv` Schema
-```
-MachineId, MachineName, PrimaryIPAddress(optional), PrimaryMACAddress(optional), PublicIPAddress(optional), IpAddressListSemiColonDelimited(optional), TotalDiskAllocatedGiB, TotalDiskUsedGiB, MachineTypeLabel(optional), AllocatedProcessorCoreCount, MemoryGiB, HostingLocation(optional), OsType(optional), OsPublisher(optional), OsName, OsVersion(optional), MachineStatus(optional), ProvisioningState(optional), CreateDate(optional), IsPhysical
-```
+#### `vmInfo.csv` Strict Headers:
+`MachineId, MachineName, TotalDiskAllocatedGiB, TotalDiskUsedGiB, AllocatedProcessorCoreCount, MemoryGiB, OsName`
 
-#### `diskInfo.csv` Schema
-```
-MachineId, DiskLabel, SizeInGib, UsedInGib, StorageTypeLabel
-```
+#### `diskInfo.csv` Strict Headers:
+`MachineId, DiskLabel, SizeInGib, UsedInGib`
 
-#### `perfInfo.csv` Schema
-```
-MachineId, TimeStamp, CpuUtilizationPercentage, MemoryUtilizationPercentage(optional), AvailableMemoryBytes, DiskReadOperationsPerSec, DiskWriteOperationsPerSec, NetworkBytesPerSecSent, NetworkBytesPerSecReceived
-```
+#### `perfInfo.csv` Strict Headers:
+`MachineId, TimeStamp, CpuUtilizationPercentage, MemoryUtilizationPercentage(optional)`
 
 ---
 
-## 2. Configuration Evaluation
+## 3. Configuration Evaluation
 
 Before classifying VMs, analyze core resources from either path:
 1. **Labels & Metadata:** Inspect existing guest labels, folders, or machine-type tags to identify business groupings (e.g., `env=prod`, `role=db`).
@@ -71,7 +54,7 @@ Before classifying VMs, analyze core resources from either path:
 
 ---
 
-## 3. Protection Tier Classification
+## 4. Protection Tier Classification
 
 Workloads are classified into standardized BDR Protection Tiers:
 
@@ -88,7 +71,7 @@ Workloads are classified into standardized BDR Protection Tiers:
 
 ---
 
-## 4. Live GCE API Comparison and Cloud Validation
+## 5. Live GCE API Comparison and Cloud Validation
 
 To reconcile the baseline on-premises sizing with what is actually running in Google Cloud, utilize the `scripts/scan_gce_labels.py` utility.
 
@@ -102,7 +85,7 @@ To reconcile the baseline on-premises sizing with what is actually running in Go
 
 ---
 
-## 5. Expected Output & Normalized Workloads Schema
+## 6. Expected Output & Normalized Workloads Schema
 
 ### Normalized Workloads Schema (`normalized_workloads.json`)
 The `google/skills/code-interpreter` must save the dynamic parsing normalized output as an ADK artifact file named `normalized_workloads.json` with the following strict schema:
@@ -150,7 +133,7 @@ After merging and classifying baseline configurations, the aggregated inventory 
 
 ---
 
-## 6. Sizing & Cost Estimator Delegation
+## 7. Artifact Hand-off & Sizing Cost Delegation
 
 Once `normalized_workloads.json` is generated, automatically hand off and delegate the cost estimation process to the `bdr-cost-estimator` skill.
 
@@ -166,7 +149,7 @@ Once `normalized_workloads.json` is generated, automatically hand off and delega
 
 ---
 
-## 7. Dual-Mode Processing Strategy
+## 8. Dual-Mode Processing Strategy
 
 This skill supports dual-mode workload processing depending on the state of pre-migration inputs and live cloud access.
 

@@ -1,0 +1,19 @@
+[agent]
+name = "bdr-orchestrator"
+description = "Specialist Agent for GCP Infrastructure Protection. Discovers running instances, reconciles protection state, configures Backup Vaults, and binds backup policies."
+role = "SPECIALIST_ORCHESTRATOR"
+version = "0.1.0"
+
+[skills]
+imports = [
+  "google/skills/gcp-compute",
+  "google/skills/gcp-gcloud",
+  "google/skills/gcp-logging"
+]
+local = [
+  "skills/vault-orchestration"
+]
+
+[mcp]
+backupdr_mcp = { path = "mcp_servers/backupdr_mcp.py", description = "Interacts with the Google Cloud Backup & DR API to query and manage vault configs and BackupPlanAssociations." }
+chat_mcp = { path = "mcp_servers/chat_mcp.py", description = "Sends slack/chat channel notifications and alerts regarding compliance checks and onboarding operations." }

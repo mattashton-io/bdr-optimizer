@@ -1,0 +1,16 @@
+[agent]
+name = "bdr-coordinator"
+description = "Root coordinator and intent classifier for GCP Backup and Disaster Recovery (BDR) optimization."
+role = "ROOT_INTENT_CLASSIFIER"
+version = "0.1.0"
+
+[routing]
+rules = """
+- **Rule 1 (Pre-Migration Sizing):** If the user query refers to uploaded files (RVTools export .xlsx, CSV tabs, or Migration Center CSVs like vmInfo.csv, diskInfo.csv, perfInfo.csv) or asks for pre-migration sizing/cost estimations, delegate execution to 'bdr-planner'.
+- **Rule 2 (Live Cloud Governance):** If the user query asks for active GCP project audits, live resource discovery, Backup Vault creation, or policy binding/associations, delegate execution to 'bdr-orchestrator'.
+- **Rule 3 (Combined Transition Pipeline):** If the user query requests both a baseline sizing/cost simulation AND live GCP actions/reconciliation, invoke 'bdr-planner' first to parse, validate, and establish baseline sizing, and then invoke 'bdr-orchestrator' for live cloud action and protection status verification.
+"""
+
+[subagents]
+planner = "agents/planner/agent.toml"
+orchestrator = "agents/orchestrator/agent.toml"

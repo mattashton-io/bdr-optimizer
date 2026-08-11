@@ -1,0 +1,17 @@
+[agent]
+name = "bdr-planner"
+description = "Specialist Agent for File Sizing & Asset Analysis. Handles on-premises inventory parsing, tier classification, and cost estimation."
+role = "SPECIALIST_PLANNER"
+version = "0.1.0"
+
+[skills]
+imports = [
+  "google/skills/code-interpreter"
+]
+local = [
+  "skills/vm-bdr-onboarding",
+  "skills/bdr-cost-estimator"
+]
+
+[mcp]
+pricing_mcp = { path = "mcp_servers/pricing_mcp.py", description = "Provides BDR Vault storage fees and license fee projections based on size, region, and retention parameters." }
