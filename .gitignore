@@ -1,6 +1,20 @@
-.venv
+.venv*
 *env
 env*
 *venv
 venv*
 *temp
+
+# Python & testing cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Sensitive credentials & environment
+.env
+.env.*
+*token*.json
+*credentials*.json
+*key*.json
+

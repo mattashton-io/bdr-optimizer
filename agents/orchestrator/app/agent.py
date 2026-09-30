@@ -37,13 +37,13 @@ from .app_utils.artifacts import save_files_as_artifacts, save_json_artifact
 MODEL = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
 
 
-def _get_auth_token() -> tuple[Optional[str], Optional[Dict[str, Any]]]:
-    """Retrieves Google OAuth2 credentials or returns a structured error."""
+def _get_auth_context() -> tuple[Optional[Any], Optional[str], Optional[Dict[str, Any]]]:
+    """Retrieves Google OAuth2 credentials and access token or returns a structured error."""
     try:
         import google.auth
         from google.auth.transport.requests import Request
     except ImportError:
-        return None, {
+        return None, None, {
             "status": "ERROR",
             "error_type": "MISSING_DEPENDENCY_ERROR",
             "component": "bdr-orchestrator (GCP Auth)",
@@ -56,9 +56,9 @@ def _get_auth_token() -> tuple[Optional[str], Optional[Dict[str, Any]]]:
             scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )
         credentials.refresh(Request())
-        return credentials.token, None
+        return credentials, credentials.token, None
     except Exception as e:
-        return None, {
+        return None, None, {
             "status": "ERROR",
             "error_type": "AUTH_CREDENTIALS_ERROR",
             "component": "bdr-orchestrator (GCP Auth)",
@@ -88,19 +88,19 @@ async def scan_live_gce_instances(project_id: str, tool_context: Optional[ToolCo
             "remediation": "Install the Google Cloud Compute SDK by running: pip install google-cloud-compute"
         }, indent=2)
 
-    token, auth_err = _get_auth_token()
+    credentials, token, auth_err = _get_auth_context()
     if auth_err:
         return json.dumps(auth_err, indent=2)
 
     try:
-        instance_client = compute_v1.InstancesClient()
-        zone_client = compute_v1.ZonesClient()
-        zones = [z.name for z in zone_client.list(project=project_id)]
+        instance_client = compute_v1.InstancesClient(credentials=credentials)
+        zone_client = compute_v1.ZonesClient(credentials=credentials)
+        zones = [z.name for z in zone_client.list(project=project_id, timeout=30.0)]
 
         instances = []
         for zone in zones:
             request = compute_v1.ListInstancesRequest(project=project_id, zone=zone)
-            for instance in instance_client.list(request=request):
+            for instance in instance_client.list(request=request, timeout=30.0):
                 disks = []
                 total_disk_gb = 0
                 for d in instance.disks:
@@ -161,7 +161,7 @@ async def scan_live_gce_instances(project_id: str, tool_context: Optional[ToolCo
         }, indent=2)
 
 
-def list_gcp_backup_vaults(project_id: str, location: str) -> str:
+def list_gcp_backup_vaults(project_id: str, location: str, timeout: int = 30) -> str:
     """Lists configured Backup Vaults and their retention locks from Backup & DR API.
 
     Args:
@@ -171,7 +171,7 @@ def list_gcp_backup_vaults(project_id: str, location: str) -> str:
     Returns:
         JSON string listing active backup vaults.
     """
-    token, auth_err = _get_auth_token()
+    _, token, auth_err = _get_auth_context()
     if auth_err:
         return json.dumps(auth_err, indent=2)
 
@@ -180,7 +180,7 @@ def list_gcp_backup_vaults(project_id: str, location: str) -> str:
     req = urllib.request.Request(url, headers=headers, method="GET")
 
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return json.dumps({"status": "SUCCESS", "vaults": data.get("backupVaults", [])}, indent=2)
     except urllib.error.HTTPError as e:
@@ -190,11 +190,17 @@ def list_gcp_backup_vaults(project_id: str, location: str) -> str:
             "cause": e.read().decode("utf-8"),
             "remediation": f"Verify Backup and DR API is enabled and caller has 'roles/backupdr.viewer' on project '{project_id}'."
         }, indent=2)
+    except TimeoutError:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "TIMEOUT_ERROR",
+            "cause": f"Request timed out after {timeout}s querying Backup Vaults."
+        }, indent=2)
     except Exception as e:
         return json.dumps({"status": "ERROR", "error_type": "NETWORK_ERROR", "cause": str(e)}, indent=2)
 
 
-def list_gcp_backup_plans(project_id: str, location: str) -> str:
+def list_gcp_backup_plans(project_id: str, location: str, timeout: int = 30) -> str:
     """Lists configured Backup Plans (Gold, Silver, Bronze schedules).
 
     Args:
@@ -204,7 +210,7 @@ def list_gcp_backup_plans(project_id: str, location: str) -> str:
     Returns:
         JSON string listing available backup plans.
     """
-    token, auth_err = _get_auth_token()
+    _, token, auth_err = _get_auth_context()
     if auth_err:
         return json.dumps(auth_err, indent=2)
 
@@ -213,7 +219,7 @@ def list_gcp_backup_plans(project_id: str, location: str) -> str:
     req = urllib.request.Request(url, headers=headers, method="GET")
 
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return json.dumps({"status": "SUCCESS", "plans": data.get("backupPlans", [])}, indent=2)
     except urllib.error.HTTPError as e:
@@ -223,11 +229,17 @@ def list_gcp_backup_plans(project_id: str, location: str) -> str:
             "cause": e.read().decode("utf-8"),
             "remediation": f"Ensure caller has 'roles/backupdr.viewer' on project '{project_id}'."
         }, indent=2)
+    except TimeoutError:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "TIMEOUT_ERROR",
+            "cause": f"Request timed out after {timeout}s querying Backup Plans."
+        }, indent=2)
     except Exception as e:
         return json.dumps({"status": "ERROR", "error_type": "NETWORK_ERROR", "cause": str(e)}, indent=2)
 
 
-def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, retention_days: int, user_confirmed: bool = False) -> str:
+def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, retention_days: int, user_confirmed: bool = False, timeout: int = 30) -> str:
     """Creates a new Backup Vault with minimum enforced retention lock (requires explicit user confirmation).
 
     Args:
@@ -255,7 +267,7 @@ def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, reten
             "remediation": "Prompt the user in chat to confirm this operation before re-invoking with user_confirmed=True."
         }, indent=2)
 
-    token, auth_err = _get_auth_token()
+    _, token, auth_err = _get_auth_context()
     if auth_err:
         return json.dumps(auth_err, indent=2)
 
@@ -272,7 +284,7 @@ def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, reten
     )
 
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             return json.dumps({"status": "SUCCESS", "result": data}, indent=2)
     except urllib.error.HTTPError as e:
@@ -281,6 +293,12 @@ def create_gcp_backup_vault(project_id: str, location: str, vault_id: str, reten
             "error_type": f"GCP_API_HTTP_{e.code}",
             "cause": e.read().decode("utf-8"),
             "remediation": f"Ensure caller has 'roles/backupdr.admin' on project '{project_id}'."
+        }, indent=2)
+    except TimeoutError:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "TIMEOUT_ERROR",
+            "cause": f"Request timed out after {timeout}s creating Backup Vault."
         }, indent=2)
     except Exception as e:
         return json.dumps({"status": "ERROR", "error_type": "NETWORK_ERROR", "cause": str(e)}, indent=2)
@@ -293,7 +311,8 @@ async def create_gcp_plan_association(
     instance_name: str,
     instance_self_link: str,
     user_confirmed: bool = False,
-    tool_context: Optional[ToolContext] = None
+    tool_context: Optional[ToolContext] = None,
+    timeout: int = 30
 ) -> str:
     """Binds a Compute Engine instance to a target Backup Plan (requires explicit user confirmation)
     and saves association report as an ADK artifact.
@@ -324,7 +343,7 @@ async def create_gcp_plan_association(
             "remediation": "Prompt the user in chat to confirm this policy association before re-invoking with user_confirmed=True."
         }, indent=2)
 
-    token, auth_err = _get_auth_token()
+    _, token, auth_err = _get_auth_context()
     if auth_err:
         return json.dumps(auth_err, indent=2)
 
@@ -344,7 +363,7 @@ async def create_gcp_plan_association(
     )
 
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             result = {"status": "SUCCESS", "bpa": data}
             if tool_context:
@@ -357,11 +376,17 @@ async def create_gcp_plan_association(
             "cause": e.read().decode("utf-8"),
             "remediation": f"Ensure caller has 'roles/backupdr.admin' on project '{project_id}'."
         }, indent=2)
+    except TimeoutError:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "TIMEOUT_ERROR",
+            "cause": f"Request timed out after {timeout}s creating Backup Plan Association."
+        }, indent=2)
     except Exception as e:
         return json.dumps({"status": "ERROR", "error_type": "NETWORK_ERROR", "cause": str(e)}, indent=2)
 
 
-def send_chat_summary(title: str, protected_vms_count: int, total_storage_gib: float, monthly_cost: float, console_link: Optional[str] = None) -> str:
+def send_chat_summary(title: str, protected_vms_count: int, total_storage_gib: float, monthly_cost: float, console_link: Optional[str] = None, timeout: int = 30) -> str:
     """Dispatches operational milestone summary cards to Google Chat or Slack webhook.
 
     Args:
@@ -396,8 +421,21 @@ def send_chat_summary(title: str, protected_vms_count: int, total_storage_gib: f
         method="POST"
     )
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.dumps({"status": "SUCCESS", "message": "Notification dispatched successfully."}, indent=2)
+    except urllib.error.HTTPError as e:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": f"WEBHOOK_HTTP_{e.code}",
+            "cause": e.read().decode("utf-8"),
+            "remediation": "Verify that the webhook URL is correct and accepts incoming POST requests."
+        }, indent=2)
+    except TimeoutError:
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "TIMEOUT_ERROR",
+            "cause": f"Webhook delivery timed out after {timeout}s."
+        }, indent=2)
     except Exception as e:
         return json.dumps({"status": "ERROR", "error_type": "WEBHOOK_DELIVERY_FAILED", "cause": str(e)}, indent=2)
 

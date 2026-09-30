@@ -31,16 +31,17 @@ from google.genai import types
 from .app_utils.artifacts import save_files_as_artifacts
 
 # Import subagent definitions
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
 try:
-    # Try importing relative or direct path
-    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
     from planner.app.agent import root_agent as planner_agent
     from orchestrator.app.agent import root_agent as orchestrator_agent
-except Exception:
-    planner_agent = None
-    orchestrator_agent = None
+except ImportError as e:
+    raise ImportError(
+        f"[BDR-OPTIMIZER ERROR] SUBAGENT_LOAD_ERROR: Failed to load specialist subagents into root coordinator: {e}"
+    ) from e
 
 MODEL = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
 

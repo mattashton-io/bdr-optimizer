@@ -340,11 +340,18 @@ async def estimate_bdr_costs(
     """
     clean_region = region.lower().strip()
     if clean_region not in REGIONAL_RATES:
-        rates = REGIONAL_RATES["us-central1"]
-        region_note = f"Region '{region}' defaulted to us-central1 benchmark rates."
-    else:
-        rates = REGIONAL_RATES[clean_region]
-        region_note = f"Rates applied for region: {clean_region}"
+        supported = list(REGIONAL_RATES.keys())
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "UNSUPPORTED_REGION_ERROR",
+            "component": "bdr-planner (estimate_bdr_costs)",
+            "message": f"Region '{region}' is not currently in the regional pricing table.",
+            "supported_regions": supported,
+            "remediation": f"Select one of the supported GCP regions: {', '.join(supported)}."
+        }, indent=2)
+
+    rates = REGIONAL_RATES[clean_region]
+    region_note = f"Rates applied for region: {clean_region}"
 
     storage_rate = rates["storage_rate_per_gb"]
     mgt_rate = rates["management_fee_per_gb"]
@@ -362,6 +369,7 @@ async def estimate_bdr_costs(
     monthly_total_365 = monthly_storage_365 + monthly_management
 
     report = {
+        "status": "SUCCESS",
         "scope": "Pre-Migration Sizing Estimation",
         "region": clean_region,
         "region_note": region_note,
@@ -414,7 +422,18 @@ def calculate_retention_delta(baseline_gib: float, current_days: int, proposed_d
         JSON string detailing monthly and annual savings or cost increases.
     """
     clean_region = region.lower().strip()
-    rates = REGIONAL_RATES.get(clean_region, REGIONAL_RATES["us-central1"])
+    if clean_region not in REGIONAL_RATES:
+        supported = list(REGIONAL_RATES.keys())
+        return json.dumps({
+            "status": "ERROR",
+            "error_type": "UNSUPPORTED_REGION_ERROR",
+            "component": "bdr-planner (calculate_retention_delta)",
+            "message": f"Region '{region}' is not currently in the regional pricing table.",
+            "supported_regions": supported,
+            "remediation": f"Select one of the supported GCP regions: {', '.join(supported)}."
+        }, indent=2)
+
+    rates = REGIONAL_RATES[clean_region]
     storage_rate = rates["storage_rate_per_gb"]
 
     current_effective = baseline_gib * (1.0 + (0.02 * current_days))
@@ -426,7 +445,9 @@ def calculate_retention_delta(baseline_gib: float, current_days: int, proposed_d
 
     direction = "INCREASE" if monthly_delta >= 0 else "SAVINGS (REDUCTION)"
     return json.dumps({
+        "status": "SUCCESS",
         "direction": direction,
+        "region": clean_region,
         "monthly_delta_usd": round(abs(monthly_delta), 2),
         "annual_delta_usd": round(abs(monthly_delta * 12), 2),
         "current_monthly_storage_usd": round(current_cost, 2),
